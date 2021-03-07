@@ -9,10 +9,8 @@ use std::{
 /// Error type for email content
 #[derive(Debug)]
 pub enum Error {
-    /// Missing from in envelope
-    MissingFrom,
-    /// Missing to in envelope
-    MissingTo,
+    /// Missing required headers
+    MissingHeader { header_name: &'static str },
     /// Can only be one from in envelope
     TooManyFrom,
     /// Invalid email: missing at
@@ -32,8 +30,7 @@ pub enum Error {
 impl Display for Error {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
         match self {
-            Error::MissingFrom => f.write_str("missing source address, invalid envelope"),
-            Error::MissingTo => f.write_str("missing destination address, invalid envelope"),
+            Error::MissingHeader { header_name } => write!(f, "missing {}-header", header_name),
             Error::TooManyFrom => f.write_str("there can only be one source address"),
             Error::EmailMissingAt => f.write_str("missing @ in email address"),
             Error::EmailMissingLocalPart => f.write_str("missing local part in email address"),

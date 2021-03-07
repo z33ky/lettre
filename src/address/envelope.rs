@@ -5,8 +5,9 @@ use super::Address;
 #[cfg(feature = "builder")]
 use crate::message::header::{self, Headers};
 #[cfg(feature = "builder")]
-use crate::message::Mailboxes;
+use crate::message::{header::To, Mailboxes};
 use crate::Error;
+use hyperx::header::Header as _;
 
 /// Simple email envelope representation
 ///
@@ -47,7 +48,7 @@ impl Envelope {
     /// If `to` has no elements in it.
     pub fn new(from: Option<Address>, to: Vec<Address>) -> Result<Envelope, Error> {
         if to.is_empty() {
-            return Err(Error::MissingTo);
+            return Err(Error::MissingHeader { header_name: To::header_name() });
         }
         Ok(Envelope {
             forward_path: to,

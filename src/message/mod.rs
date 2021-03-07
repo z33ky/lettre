@@ -324,9 +324,7 @@ impl MessageBuilder {
     /// Set `Mime-Version` header to 1.0
     ///
     /// Shortcut for `self.header(header::MIME_VERSION_1_0)`.
-    ///
-    /// Not exposed as it is set by body methods
-    fn mime_1_0(self) -> Self {
+    pub fn mime_1_0(self) -> Self {
         self.header(header::MIME_VERSION_1_0)
     }
 
@@ -432,35 +430,56 @@ impl MessageBuilder {
     // TODO: High-level methods for attachments and embedded files
 
     /// Create message from body
-    fn build(self, body: MessageBody) -> Result<Message, EmailError> {
+    pub fn build(self, body: MessageBody) -> Result<Message, EmailError> {
+        // Check for missing required headers
+        // https://tools.ietf.org/html/rfc5322#section-3.6
+
+        if self.headers.get::<header::Date>().is_none() {
+            return Err(EmailError::MissingHeader{ header_name: header::Date::header_name() });
+        }
+
+        // Originator is checked by build_unchecked(), since it is required for the envelope
+        self.build_unchecked(body)
+    }
+
+    pub fn add_missing_required_default(self) -> Self {
         // Check for missing required headers
         // https://tools.ietf.org/html/rfc5322#section-3.6
 
         // Insert Date if missing
-        let res = if self.headers.get::<header::Date>().is_none() {
+        if self.headers.get::<header::Date>().is_none() {
             self.date_now()
         } else {
             self
-        };
+        }
+    }
 
-        // Fail is missing correct originator (Sender or From)
-        match res.headers.get::<header::From>() {
+    pub fn build_defaults(self, body: MessageBody) -> Result<Message, EmailError> {
+        self.add_missing_required_default().build_unchecked(body)
+    }
+
+    /// Create [`Message`] from body
+    ///
+    /// "unchecked" may be a bit misleading; This does not check for the presence
+    /// of required headers, except the ones required for the envelope.
+    pub fn build_unchecked(self, body: MessageBody) -> Result<Message, EmailError> {
+        match self.headers.get::<header::From>() {
             Some(header::From(f)) => {
-                if f.len() > 1 && res.headers.get::<header::Sender>().is_none() {
+                if f.len() > 1 && self.headers.get::<header::Sender>().is_none() {
                     return Err(EmailError::TooManyFrom);
                 }
             }
             None => {
-                return Err(EmailError::MissingFrom);
+                return Err(EmailError::MissingHeader { header_name: header::From::header_name() });
             }
         }
 
-        let envelope = match res.envelope {
+        let envelope = match self.envelope {
             Some(e) => e,
-            None => Envelope::try_from(&res.headers)?,
+            None => Envelope::try_from(&self.headers)?,
         };
         Ok(Message {
-            headers: res.headers,
+            headers: self.headers,
             body,
             envelope,
         })
@@ -476,17 +495,17 @@ impl MessageBuilder {
         let body = body.into_body(maybe_encoding);
 
         self.headers.set(body.encoding());
-        self.build(MessageBody::Raw(body.into_vec()))
+        self.build_defaults(MessageBody::Raw(body.into_vec()))
     }
 
     /// Create message using mime body ([`MultiPart`][self::MultiPart])
     pub fn multipart(self, part: MultiPart) -> Result<Message, EmailError> {
-        self.mime_1_0().build(MessageBody::Mime(Part::Multi(part)))
+        self.mime_1_0().build_defaults(MessageBody::Mime(Part::Multi(part)))
     }
 
     /// Create message using mime body ([`SinglePart`][self::SinglePart])
     pub fn singlepart(self, part: SinglePart) -> Result<Message, EmailError> {
-        self.mime_1_0().build(MessageBody::Mime(Part::Single(part)))
+        self.mime_1_0().build_defaults(MessageBody::Mime(Part::Single(part)))
     }
 }
 
@@ -499,7 +518,7 @@ pub struct Message {
 }
 
 #[derive(Clone, Debug)]
-enum MessageBody {
+pub enum MessageBody {
     Mime(Part),
     Raw(Vec<u8>),
 }
