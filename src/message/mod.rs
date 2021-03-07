@@ -250,7 +250,7 @@ mod mailbox;
 mod mimebody;
 mod utf8_b;
 
-use std::{convert::TryFrom, time::SystemTime};
+use std::{borrow::Cow, convert::TryFrom, time::SystemTime};
 
 use uuid::Uuid;
 
@@ -526,6 +526,22 @@ pub struct Message {
 pub enum MessageBody {
     Mime(Part),
     Raw(Vec<u8>),
+}
+
+impl MessageBody {
+    pub fn into_raw(self) -> MessageBody {
+        match self {
+            MessageBody::Mime(p) => MessageBody::Raw(p.formatted()),
+            MessageBody::Raw(r) => MessageBody::Raw(r),
+        }
+    }
+
+    pub fn raw<'a>(&'a self) -> Cow<'a, [u8]> {
+        match self {
+            MessageBody::Mime(p) => Cow::Owned(p.formatted()),
+            MessageBody::Raw(r) => Cow::Borrowed(&r),
+        }
+    }
 }
 
 impl Message {
