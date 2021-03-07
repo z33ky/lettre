@@ -5,7 +5,7 @@ use super::Address;
 #[cfg(feature = "builder")]
 use crate::message::header::{self, Headers};
 #[cfg(feature = "builder")]
-use crate::message::{Mailbox, Mailboxes};
+use crate::message::Mailboxes;
 use crate::Error;
 
 /// Simple email envelope representation
@@ -124,11 +124,10 @@ impl TryFrom<&Headers> for Envelope {
             // ... else try From
             None => match headers.get::<header::From>() {
                 Some(header::From(a)) => {
-                    let from: Vec<Mailbox> = a.clone().into();
-                    if from.len() > 1 {
+                    if a.len() > 1 {
                         return Err(Error::TooManyFrom);
                     }
-                    Some(from[0].email.clone())
+                    a.iter().next().map(|mailbox| mailbox.email.clone())
                 }
                 None => None,
             },

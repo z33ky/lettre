@@ -72,7 +72,7 @@ impl Mailbox {
     where
         F: FnOnce(&str) -> String,
     {
-        Mailbox::new(self.name.clone().map(|s| f(&s)), self.email.clone())
+        Mailbox::new(self.name.as_ref().map(|s| f(s)), self.email.clone())
     }
 }
 
@@ -200,6 +200,33 @@ impl Mailboxes {
     /// ```
     pub fn push(&mut self, mbox: Mailbox) {
         self.0.push(mbox);
+    }
+
+    /// Returns the number of [`Mailbox`] instances that are currently stored.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use lettre::{
+    ///     message::{Mailbox, Mailboxes},
+    ///     Address,
+    ///
+    /// # use std::error::Error;
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let mut mailboxes = Mailboxes::new();
+    ///
+    /// let address = Address::new("example", "email.com")?;
+    /// mailboxes.push(Mailbox::new(None, address));
+    ///
+    /// let address = Address::new("example", "email.com")?;
+    /// mailboxes.push(Mailbox::new(None, address));
+    ///
+    /// assert_eq!(mailboxes.len(), 2);
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn len(&self) -> usize {
+        self.0.len()
     }
 
     /// Extracts the first [`Mailbox`] if it exists.
