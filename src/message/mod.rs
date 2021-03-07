@@ -290,6 +290,11 @@ impl MessageBuilder {
         self
     }
 
+    /// Get the current headers for the Message
+    pub fn get_headers(&self) -> &Headers {
+        &self.headers
+    }
+
     /// Add mailbox to header
     pub fn mailbox<H: Header + MailboxesHeader>(mut self, header: H) -> Self {
         if self.headers.has::<H>() {
