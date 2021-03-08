@@ -342,42 +342,42 @@ impl MessageBuilder {
         self.header(header::Sender(mbox))
     }
 
-    /// Set or add mailbox to `From` header
+    /// Set or add mailboxes to `From` header
     ///
     /// Defined in [RFC5322](https://tools.ietf.org/html/rfc5322#section-3.6.2).
     ///
     /// Shortcut for `self.mailbox(header::From(mbox))`.
-    pub fn from(self, mbox: Mailbox) -> Self {
+    pub fn from(self, mbox: impl Into<Mailboxes>) -> Self {
         self.mailbox(header::From(mbox.into()))
     }
 
-    /// Set or add mailbox to `ReplyTo` header
+    /// Set or add mailboxes to `ReplyTo` header
     ///
     /// Defined in [RFC5322](https://tools.ietf.org/html/rfc5322#section-3.6.2).
     ///
     /// Shortcut for `self.mailbox(header::ReplyTo(mbox))`.
-    pub fn reply_to(self, mbox: Mailbox) -> Self {
+    pub fn reply_to(self, mbox: impl Into<Mailboxes>) -> Self {
         self.mailbox(header::ReplyTo(mbox.into()))
     }
 
-    /// Set or add mailbox to `To` header
+    /// Set or add mailboxes to `To` header
     ///
     /// Shortcut for `self.mailbox(header::To(mbox))`.
-    pub fn to(self, mbox: Mailbox) -> Self {
+    pub fn to(self, mbox: impl Into<Mailboxes>) -> Self {
         self.mailbox(header::To(mbox.into()))
     }
 
-    /// Set or add mailbox to `Cc` header
+    /// Set or add mailboxes to `Cc` header
     ///
     /// Shortcut for `self.mailbox(header::Cc(mbox))`.
-    pub fn cc(self, mbox: Mailbox) -> Self {
+    pub fn cc(self, mbox: impl Into<Mailboxes>) -> Self {
         self.mailbox(header::Cc(mbox.into()))
     }
 
-    /// Set or add mailbox to `Bcc` header
+    /// Set or add mailboxes to `Bcc` header
     ///
     /// Shortcut for `self.mailbox(header::Bcc(mbox))`.
-    pub fn bcc(self, mbox: Mailbox) -> Self {
+    pub fn bcc(self, mbox: impl Into<Mailboxes>) -> Self {
         self.mailbox(header::Bcc(mbox.into()))
     }
 
@@ -602,8 +602,8 @@ mod test {
     #[test]
     fn email_miminal_message() {
         assert!(Message::builder()
-            .from("NoBody <nobody@domain.tld>".parse().unwrap())
-            .to("NoBody <nobody@domain.tld>".parse().unwrap())
+            .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+            .to("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
             .body(String::from("Happy new year!"))
             .is_ok());
     }
@@ -611,8 +611,8 @@ mod test {
     #[test]
     fn email_missing_sender() {
         assert!(Message::builder()
-            .from("NoBody <nobody@domain.tld>".parse().unwrap())
-            .from("AnyBody <anybody@domain.tld>".parse().unwrap())
+            .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+            .from("AnyBody <anybody@domain.tld>".parse::<Mailbox>().unwrap())
             .body(String::from("Happy new year!"))
             .is_err());
     }
@@ -631,7 +631,7 @@ mod test {
                 .into(),
             ))
             .header(header::To(
-                vec!["Pony O.P. <pony@domain.tld>".parse().unwrap()].into(),
+                vec!["Pony O.P. <pony@domain.tld>".parse::<Mailbox>().unwrap()].into(),
             ))
             .header(header::Subject("яңа ел белән!".into()))
             .body(String::from("Happy new year!"))
@@ -657,9 +657,9 @@ mod test {
         let img = std::fs::read("./docs/lettre.png").unwrap();
         let m = Message::builder()
             .date(date)
-            .from("NoBody <nobody@domain.tld>".parse().unwrap())
-            .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-            .to("Hei <hei@domain.tld>".parse().unwrap())
+            .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+            .reply_to("Yuin <yuin@domain.tld>".parse::<Mailbox>().unwrap())
+            .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
             .subject("Happy new year")
             .multipart(
                 MultiPart::related()

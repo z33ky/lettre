@@ -4,7 +4,7 @@
 use tokio1_crate as tokio;
 
 use lettre::{
-    transport::smtp::authentication::Credentials, AsyncSmtpTransport, Message, Tokio1Executor,
+    transport::smtp::authentication::Credentials, AsyncSmtpTransport, message::Mailbox, Message, Tokio1Executor,
     Tokio1Transport,
 };
 
@@ -13,9 +13,9 @@ async fn main() {
     tracing_subscriber::fmt::init();
 
     let email = Message::builder()
-        .from("NoBody <nobody@domain.tld>".parse().unwrap())
-        .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-        .to("Hei <hei@domain.tld>".parse().unwrap())
+        .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+        .reply_to("Yuin <yuin@domain.tld>".parse::<Mailbox>().unwrap())
+        .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
         .subject("Happy new async year")
         .body(String::from("Be happy with async!"))
         .unwrap();

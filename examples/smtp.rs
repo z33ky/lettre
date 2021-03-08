@@ -1,12 +1,12 @@
-use lettre::{Message, SmtpTransport, Transport};
+use lettre::{message::Mailbox, Message, SmtpTransport, Transport};
 
 fn main() {
     tracing_subscriber::fmt::init();
 
     let email = Message::builder()
-        .from("NoBody <nobody@domain.tld>".parse().unwrap())
-        .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-        .to("Hei <hei@domain.tld>".parse().unwrap())
+        .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+        .reply_to("Yuin <yuin@domain.tld>".parse::<Mailbox>().unwrap())
+        .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
         .subject("Happy new year")
         .body(String::from("Be happy!"))
         .unwrap();

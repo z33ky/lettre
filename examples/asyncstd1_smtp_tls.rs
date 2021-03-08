@@ -1,6 +1,6 @@
 use lettre::{
     transport::smtp::authentication::Credentials, AsyncSmtpTransport, AsyncStd1Executor,
-    AsyncStd1Transport, Message,
+    AsyncStd1Transport, message::Mailbox, Message,
 };
 
 #[async_std::main]
@@ -8,9 +8,9 @@ async fn main() {
     tracing_subscriber::fmt::init();
 
     let email = Message::builder()
-        .from("NoBody <nobody@domain.tld>".parse().unwrap())
-        .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-        .to("Hei <hei@domain.tld>".parse().unwrap())
+        .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+        .reply_to("Yuin <yuin@domain.tld>".parse::<Mailbox>().unwrap())
+        .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
         .subject("Happy new async year")
         .body(String::from("Be happy with async!"))
         .unwrap();

@@ -1,7 +1,7 @@
 #[cfg(test)]
 #[cfg(feature = "builder")]
 mod test {
-    use lettre::{transport::stub::StubTransport, Message};
+    use lettre::{transport::stub::StubTransport, message::Mailbox, Message};
 
     #[cfg(feature = "tokio02")]
     use tokio02_crate as tokio;
@@ -12,9 +12,9 @@ mod test {
         let sender_ok = StubTransport::new_ok();
         let sender_ko = StubTransport::new_error();
         let email = Message::builder()
-            .from("NoBody <nobody@domain.tld>".parse().unwrap())
-            .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-            .to("Hei <hei@domain.tld>".parse().unwrap())
+            .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+            .reply_to("Yuin <yuin@domain.tld>".parse::<Mailbox>().unwrap())
+            .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
             .subject("Happy new year")
             .body(String::from("Be happy!"))
             .unwrap();
@@ -31,9 +31,9 @@ mod test {
         let sender_ok = StubTransport::new_ok();
         let sender_ko = StubTransport::new_error();
         let email = Message::builder()
-            .from("NoBody <nobody@domain.tld>".parse().unwrap())
-            .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-            .to("Hei <hei@domain.tld>".parse().unwrap())
+            .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+            .reply_to("Yuin <yuin@domain.tld>".parse::<Mailbox>().unwrap())
+            .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
             .subject("Happy new year")
             .date("Tue, 15 Nov 1994 08:12:31 GMT".parse().unwrap())
             .body(String::from("Be happy!"))
@@ -51,9 +51,9 @@ mod test {
         let sender_ok = StubTransport::new_ok();
         let sender_ko = StubTransport::new_error();
         let email = Message::builder()
-            .from("NoBody <nobody@domain.tld>".parse().unwrap())
-            .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-            .to("Hei <hei@domain.tld>".parse().unwrap())
+            .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+            .reply_to("Yuin <yuin@domain.tld>".parse::<Mailbox>().unwrap())
+            .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
             .subject("Happy new year")
             .date("Tue, 15 Nov 1994 08:12:31 GMT".parse().unwrap())
             .body(String::from("Be happy!"))

@@ -1,6 +1,6 @@
 use lettre::{
     message::{header, MultiPart, SinglePart},
-    FileTransport, Message, Transport,
+    FileTransport, message::Mailbox, Message, Transport,
 };
 use maud::html;
 
@@ -31,8 +31,8 @@ fn main() {
 
     // Build the message.
     let email = Message::builder()
-        .from("NoBody <nobody@domain.tld>".parse().unwrap())
-        .to("Hei <hei@domain.tld>".parse().unwrap())
+        .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+        .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
         .subject("Hello from Lettre!")
         .multipart(
             MultiPart::alternative() // This is composed of two parts.

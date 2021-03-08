@@ -1,7 +1,7 @@
 #[cfg(test)]
 #[cfg(all(feature = "file-transport", feature = "builder"))]
 mod test {
-    use lettre::{transport::file::FileTransport, Message};
+    use lettre::{transport::file::FileTransport, message::Mailbox, Message};
     use std::{
         env::temp_dir,
         fs::{read_to_string, remove_file},
@@ -15,9 +15,9 @@ mod test {
         use lettre::Transport;
         let sender = FileTransport::new(temp_dir());
         let email = Message::builder()
-            .from("NoBody <nobody@domain.tld>".parse().unwrap())
-            .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-            .to("Hei <hei@domain.tld>".parse().unwrap())
+            .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+            .reply_to("Yuin <yuin@domain.tld>".parse::<Mailbox>().unwrap())
+            .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
             .subject("Happy new year")
             .date("Tue, 15 Nov 1994 08:12:31 GMT".parse().unwrap())
             .body(String::from("Be happy!"))
@@ -51,9 +51,9 @@ mod test {
         use lettre::Transport;
         let sender = FileTransport::with_envelope(temp_dir());
         let email = Message::builder()
-            .from("NoBody <nobody@domain.tld>".parse().unwrap())
-            .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-            .to("Hei <hei@domain.tld>".parse().unwrap())
+            .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+            .reply_to("Yuin <yuin@domain.tld>".parse::<Mailbox>().unwrap())
+            .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
             .subject("Happy new year")
             .date("Tue, 15 Nov 1994 08:12:31 GMT".parse().unwrap())
             .body(String::from("Be happy!"))
@@ -103,9 +103,9 @@ mod test {
 
         let sender = AsyncFileTransport::<AsyncStd1Executor>::new(temp_dir());
         let email = Message::builder()
-            .from("NoBody <nobody@domain.tld>".parse().unwrap())
-            .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-            .to("Hei <hei@domain.tld>".parse().unwrap())
+            .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+            .reply_to("Yuin <yuin@domain.tld>".parse::<Mailbox>().unwrap())
+            .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
             .subject("Happy new year")
             .date("Tue, 15 Nov 1994 08:12:31 GMT".parse().unwrap())
             .body(String::from("Be happy!"))
@@ -140,9 +140,9 @@ mod test {
 
         let sender = AsyncFileTransport::<Tokio02Executor>::new(temp_dir());
         let email = Message::builder()
-            .from("NoBody <nobody@domain.tld>".parse().unwrap())
-            .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-            .to("Hei <hei@domain.tld>".parse().unwrap())
+            .from("NoBody <nobody@domain.tld>".parse::<Mailbox>().unwrap())
+            .reply_to("Yuin <yuin@domain.tld>".parse::<Mailbox>().unwrap())
+            .to("Hei <hei@domain.tld>".parse::<Mailbox>().unwrap())
             .subject("Happy new year")
             .date("Tue, 15 Nov 1994 08:12:31 GMT".parse().unwrap())
             .body(String::from("Be happy!"))
